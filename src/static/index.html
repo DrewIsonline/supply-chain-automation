@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supply Chain Automation Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-active { background-color: #10b981; }
+        .status-warning { background-color: #f59e0b; }
+        .status-error { background-color: #ef4444; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold">Supply Chain Automation</h1>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex items-baseline space-x-4">
+                            <a href="#dashboard" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Dashboard</a>
+                            <a href="#inventory" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Inventory</a>
+                            <a href="#suppliers" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Suppliers</a>
+                            <a href="#reorders" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Auto-Reorder</a>
+                            <a href="#forecasting" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Forecasting</a>
+                            <a href="#webhooks" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Integrations</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                        Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Dashboard Overview -->
+        <div id="dashboard" class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">System Overview</h2>
+            
+            <!-- Status Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white overflow-hidden shadow rounded-lg card-hover">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i data-lucide="package" class="h-6 w-6 text-blue-600"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Inventory Bot</dt>
+                                    <dd class="flex items-center text-lg font-medium text-gray-900">
+                                        <span class="status-indicator status-active"></span>
+                                        Active
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white overflow-hidden shadow rounded-lg card-hover">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i data-lucide="users" class="h-6 w-6 text-green-600"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Supplier Bot</dt>
+                                    <dd class="flex items-center text-lg font-medium text-gray-900">
+                                        <span class="status-indicator status-active"></span>
+                                        Active
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white overflow-hidden shadow rounded-lg card-hover">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i data-lucide="refresh-cw" class="h-6 w-6 text-purple-600"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Auto-Reorder Bot</dt>
+                                    <dd class="flex items-center text-lg font-medium text-gray-900">
+                                        <span class="status-indicator status-active"></span>
+                                        Active
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white overflow-hidden shadow rounded-lg card-hover">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i data-lucide="trending-up" class="h-6 w-6 text-orange-600"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Forecasting Bot</dt>
+                                    <dd class="flex items-center text-lg font-medium text-gray-900">
+                                        <span class="status-indicator status-active"></span>
+                                        Active
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white shadow rounded-lg mb-8">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button onclick="addProduct()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors">
+                            <i data-lucide="plus" class="inline h-4 w-4 mr-2"></i>
+                            Add Product
+                        </button>
+                        <button onclick="createSupplierRequest()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors">
+                            <i data-lucide="user-plus" class="inline h-4 w-4 mr-2"></i>
+                            New Supplier Request
+                        </button>
+                        <button onclick="triggerReorder()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-colors">
+                            <i data-lucide="refresh-cw" class="inline h-4 w-4 mr-2"></i>
+                            Trigger Reorder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Activity</h3>
+                    <div id="recent-activity" class="space-y-3">
+                        <!-- Activity items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Management Section -->
+        <div id="inventory" class="mb-8 hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Inventory Management</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Inventory Overview -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Inventory Overview</h3>
+                        <canvas id="inventoryChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Stock Alerts -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Stock Alerts</h3>
+                        <div id="stock-alerts" class="space-y-3">
+                            <!-- Alerts will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product List -->
+            <div class="bg-white shadow rounded-lg mt-6">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Products</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stock</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Min Threshold</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Products will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zapier Integration Section -->
+        <div id="webhooks" class="mb-8 hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Zapier Integration</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Available Triggers -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Available Triggers</h3>
+                        <div id="zapier-triggers" class="space-y-3">
+                            <!-- Triggers will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Webhook Subscriptions -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Active Webhooks</h3>
+                        <div id="webhook-subscriptions" class="space-y-3">
+                            <!-- Subscriptions will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integration Instructions -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
+                <h3 class="text-lg font-medium text-blue-900 mb-2">How to Connect with Zapier</h3>
+                <ol class="list-decimal list-inside text-blue-800 space-y-2">
+                    <li>Copy your API endpoint URL: <code class="bg-blue-100 px-2 py-1 rounded">http://your-domain.com/api</code></li>
+                    <li>In Zapier, create a new Zap and search for "Webhooks by Zapier"</li>
+                    <li>Choose "Catch Hook" as your trigger</li>
+                    <li>Copy the webhook URL and subscribe to events using our API</li>
+                    <li>Test your trigger and continue building your automation</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals and Forms -->
+    <div id="modal-overlay" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+                <div id="modal-content">
+                    <!-- Modal content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Global variables
+        let currentSection = 'dashboard';
+        const API_BASE = '/api';
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('[id]').forEach(el => {
+                if (['dashboard', 'inventory', 'suppliers', 'reorders', 'forecasting', 'webhooks'].includes(el.id)) {
+                    el.classList.add('hidden');
+                }
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            currentSection = sectionId;
+            
+            // Load section data
+            loadSectionData(sectionId);
+        }
+
+        // Navigation event listeners
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('href').substring(1);
+                showSection(sectionId);
+            });
+        });
+
+        // API Functions
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(API_BASE + endpoint, options);
+                return await response.json();
+            } catch (error) {
+                console.error('API call failed:', error);
+                return { error: error.message };
+            }
+        }
+
+        // Load section data
+        async function loadSectionData(sectionId) {
+            switch (sectionId) {
+                case 'dashboard':
+                    await loadDashboardData();
+                    break;
+                case 'inventory':
+                    await loadInventoryData();
+                    break;
+                case 'webhooks':
+                    await loadWebhookData();
+                    break;
+            }
+        }
+
+        // Dashboard functions
+        async function loadDashboardData() {
+            try {
+                const [orchestratorStatus, recentActivity] = await Promise.all([
+                    apiCall('/orchestrator/status'),
+                    apiCall('/webhooks/events')
+                ]);
+
+                // Update recent activity
+                const activityContainer = document.getElementById('recent-activity');
+                if (recentActivity.events && recentActivity.events.length > 0) {
+                    activityContainer.innerHTML = recentActivity.events.slice(0, 5).map(event => `
+                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <div class="flex-shrink-0">
+                                <i data-lucide="activity" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">${event.trigger}</p>
+                                <p class="text-sm text-gray-500">${new Date(event.timestamp).toLocaleString()}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    activityContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No recent activity</p>';
+                }
+
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+            }
+        }
+
+        // Inventory functions
+        async function loadInventoryData() {
+            try {
+                const [products, alerts] = await Promise.all([
+                    apiCall('/inventory/products'),
+                    apiCall('/inventory/alerts')
+                ]);
+
+                // Update products table
+                const productsTable = document.getElementById('products-table');
+                if (products.products && products.products.length > 0) {
+                    productsTable.innerHTML = products.products.map(product => `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${product.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${product.current_stock}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${product.min_threshold}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(product.status)}">
+                                    ${product.status}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button onclick="editProduct('${product.product_id}')" class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    productsTable.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-500">No products found</td></tr>';
+                }
+
+                // Update alerts
+                const alertsContainer = document.getElementById('stock-alerts');
+                if (alerts.alerts && alerts.alerts.length > 0) {
+                    alertsContainer.innerHTML = alerts.alerts.slice(0, 5).map(alert => `
+                        <div class="flex items-center space-x-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="flex-shrink-0">
+                                <i data-lucide="alert-triangle" class="h-5 w-5 text-red-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-red-900">${alert.message}</p>
+                                <p class="text-sm text-red-700">${alert.product_name}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    alertsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No alerts</p>';
+                }
+
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Failed to load inventory data:', error);
+            }
+        }
+
+        // Webhook functions
+        async function loadWebhookData() {
+            try {
+                const [triggers, subscriptions] = await Promise.all([
+                    apiCall('/zapier/triggers'),
+                    apiCall('/webhooks/subscriptions')
+                ]);
+
+                // Update triggers
+                const triggersContainer = document.getElementById('zapier-triggers');
+                if (triggers.triggers) {
+                    triggersContainer.innerHTML = triggers.triggers.map(trigger => `
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h4 class="font-medium text-gray-900">${trigger.name}</h4>
+                            <p class="text-sm text-gray-500 mt-1">${trigger.description}</p>
+                            <code class="text-xs bg-gray-100 px-2 py-1 rounded mt-2 inline-block">${trigger.webhook_url}</code>
+                        </div>
+                    `).join('');
+                }
+
+                // Update subscriptions
+                const subscriptionsContainer = document.getElementById('webhook-subscriptions');
+                if (subscriptions.subscriptions && subscriptions.subscriptions.length > 0) {
+                    subscriptionsContainer.innerHTML = subscriptions.subscriptions.map(sub => `
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">${sub.trigger_event}</h4>
+                                    <p class="text-sm text-gray-500 mt-1">${sub.webhook_url}</p>
+                                </div>
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full ${sub.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                                    ${sub.status}
+                                </span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    subscriptionsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No active webhooks</p>';
+                }
+
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Failed to load webhook data:', error);
+            }
+        }
+
+        // Utility functions
+        function getStatusColor(status) {
+            switch (status) {
+                case 'normal': return 'bg-green-100 text-green-800';
+                case 'stockout': return 'bg-red-100 text-red-800';
+                case 'overstock': return 'bg-yellow-100 text-yellow-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Modal functions
+        function showModal(content) {
+            document.getElementById('modal-content').innerHTML = content;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        function hideModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+        }
+
+        // Quick action functions
+        function addProduct() {
+            showModal(`
+                <div class="px-6 py-4">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Add New Product</h3>
+                    <form id="add-product-form">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Product ID</label>
+                                <input type="text" name="product_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Product Name</label>
+                                <input type="text" name="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Current Stock</label>
+                                <input type="number" name="current_stock" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Min Threshold</label>
+                                <input type="number" name="min_threshold" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Max Threshold</label>
+                                <input type="number" name="max_threshold" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button type="button" onclick="hideModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700">Add Product</button>
+                        </div>
+                    </form>
+                </div>
+            `);
+
+            document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                
+                const result = await apiCall('/inventory/products', 'POST', data);
+                if (result.success) {
+                    hideModal();
+                    if (currentSection === 'inventory') {
+                        loadInventoryData();
+                    }
+                    alert('Product added successfully!');
+                } else {
+                    alert('Failed to add product: ' + (result.error || 'Unknown error'));
+                }
+            });
+        }
+
+        function createSupplierRequest() {
+            showModal(`
+                <div class="px-6 py-4">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Create Supplier Request</h3>
+                    <form id="supplier-request-form">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Request Type</label>
+                                <select name="request_type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                                    <option value="quote">Quote Request</option>
+                                    <option value="order">Order</option>
+                                    <option value="information">Information Request</option>
+                                    <option value="complaint">Complaint</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Supplier ID</label>
+                                <input type="text" name="supplier_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea name="description" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Priority</label>
+                                <select name="priority" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button type="button" onclick="hideModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-green-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-green-700">Create Request</button>
+                        </div>
+                    </form>
+                </div>
+            `);
+
+            document.getElementById('supplier-request-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                
+                const result = await apiCall('/suppliers/requests', 'POST', data);
+                if (result.success) {
+                    hideModal();
+                    alert('Supplier request created successfully!');
+                } else {
+                    alert('Failed to create request: ' + (result.error || 'Unknown error'));
+                }
+            });
+        }
+
+        function triggerReorder() {
+            showModal(`
+                <div class="px-6 py-4">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Trigger Manual Reorder</h3>
+                    <form id="reorder-form">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Product ID</label>
+                                <input type="text" name="product_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Quantity</label>
+                                <input type="number" name="quantity" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button type="button" onclick="hideModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-purple-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-purple-700">Trigger Reorder</button>
+                        </div>
+                    </form>
+                </div>
+            `);
+
+            document.getElementById('reorder-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                
+                const result = await apiCall('/reorder/trigger', 'POST', data);
+                if (result.success) {
+                    hideModal();
+                    alert('Reorder triggered successfully!');
+                } else {
+                    alert('Failed to trigger reorder: ' + (result.error || 'Unknown error'));
+                }
+            });
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('modal-overlay').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                hideModal();
+            }
+        });
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardData();
+        });
+    </script>
+</body>
+</html>
